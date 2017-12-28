@@ -1,0 +1,17 @@
+// pest grammar for l3
+
+open = _{ "(" }
+close = _{ ")" }
+digit = @{ '0' .. '9' }
+integer = @{ ("+" | "-")? ~ digit+ }
+ident = @{ (!open ~ !close ~ !whitespace ~ any)+ }
+term = { integer | ident | list }
+list = { open ~ term* ~ close }
+program = { soi ~ list* ~ eoi } 
+
+newline    = _{ "\n" | "\r\n" }
+whitespace = _{ " " | "\t" | newline }
+comment    = _{ ";;" ~ (!newline ~ any)* }
+
+
+
