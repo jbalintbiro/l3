@@ -1,1 +1,1 @@
-toy lisp like language (doesn't even eval yet)
+toy lisp like language in very early stages of development
