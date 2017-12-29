@@ -1,9 +1,11 @@
 [package]
 name = "l3"
 version = "0.1.0"
-authors = ["jbalintbiro"]
+authors = ["J Balint Biro <j.balint.biro@gmail.com>"]
+description = "Interpreter for the L3 language"
 
 [dependencies]
+clap = "2"
 pest = "^1.0.0-beta"
 pest_derive = "^1.0.0-beta"
 
