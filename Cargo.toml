@@ -1,6 +1,6 @@
 [package]
 name = "l3"
-version = "0.1.0"
+version = "0.1.0-dev"
 authors = ["J Balint Biro <j.balint.biro@gmail.com>"]
 description = "Interpreter for the L3 language"
 

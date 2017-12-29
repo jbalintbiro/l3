@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "l3"
-version = "0.1.0"
+version = "0.1.0-dev"
 dependencies = [
  "clap 2.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest 1.0.0-beta.17 (registry+https://github.com/rust-lang/crates.io-index)",
