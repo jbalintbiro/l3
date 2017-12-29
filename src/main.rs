@@ -20,6 +20,7 @@ struct L3Parser;
 use std::fmt;
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::iter::FromIterator;
 
 type LCell<T> = Rc<RefCell<T>>;
 
@@ -66,6 +67,7 @@ impl Value {
 		}
 	}
 }
+
 
 type HostFunc = fn(LCell<Bindings>) -> LCell<Value>;
 
@@ -202,6 +204,15 @@ fn print_list_inner(inner: &(LCell<Value>, LCell<Value>), f: &mut fmt::Formatter
 	write!(f, "")
 }
 
+impl FromIterator<LCell<Value>> for Value {
+	fn from_iter<I: IntoIterator<Item=LCell<Value>>>(iter: I) -> Self {
+        let mut builder = ListBuilder::new();
+        for v in iter {
+            builder.push(v);
+        }
+		builder.build()
+    }
+}
 
 struct ListBuilder {
 	head: Option<Value>,
@@ -374,6 +385,61 @@ fn fn_print(env: LCell<Bindings>) -> LCell<Value> {
 	lcell(Value::True)
 }
 
+fn fn_add(env: LCell<Bindings>) -> LCell<Value> {
+	let envref = env.borrow();
+	let paramsref = envref.get_binding(&ident("_params"));
+	let params = paramsref.borrow();
+	lcell(int(
+		params
+			.iter()
+			.map(|r| {
+				match *r.borrow() {
+					Value::Int(n) => n,
+					ref v => panic!("add got something not a number {}", v),
+				}
+			})
+			.sum()
+	))
+}
+
+fn fn_mul(env: LCell<Bindings>) -> LCell<Value> {
+	let envref = env.borrow();
+	let paramsref = envref.get_binding(&ident("_params"));
+	let params = paramsref.borrow();
+	lcell(int(
+		params
+			.iter()
+			.map(|r| {
+				match *r.borrow() {
+					Value::Int(n) => n,
+					ref v => panic!("add got something not a number {}", v),
+				}
+			})
+			.product()
+	))
+}
+
+fn fn_exit(env: LCell<Bindings>) -> LCell<Value> {
+	let envref = env.borrow();
+	let paramsref = envref.get_binding(&ident("_params"));
+	let params = paramsref.borrow();
+	let code = match params.iter().next() {
+		None => 0,
+		Some(v) => match *v.borrow() {
+			Value::Int(i) => i,
+			ref v => panic!("exit called with something other than an integer {}", v)
+		}
+	};
+	std::process::exit(code);
+}
+
+fn fn_list(env: LCell<Bindings>) -> LCell<Value> {
+	let envref = env.borrow();
+	let paramsref = envref.get_binding(&ident("_params"));
+	let params = paramsref.borrow();
+	lcell(params.iter().collect::<Value>())
+}
+
 fn make_params(params: LCell<Value>, parent: Option<LCell<Bindings>>) -> LCell<Bindings> {
 	let mut parmap = BTreeMap::new();
 	parmap.insert("_params".to_string(), params);
@@ -403,7 +469,7 @@ fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 						let fnenv = make_params(lcell(params.build()), Some(env.clone()));
 						fun.eval(fnenv)
 					} else {
-						panic!("function {} not known.", id)
+						panic!("function `{}` not known.", id)
 					}
 				},
 			}
@@ -415,12 +481,20 @@ fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	}
 }
 
-fn main() {
-	let root_bindings = lcell(make_root_bindings(vec![
+fn default_root() -> LCell<Bindings> {
+	lcell(make_root_bindings(vec![
 		("print", fn_print),
-	]));
-	
-	let program = "(print (quote 1 2 3)) (print A B)";
+		("list", fn_list),
+		("exit", fn_exit),
+		("+", fn_add),
+		("*", fn_mul),
+	]))
+}
+
+fn main() {
+	let root_bindings =	default_root();
+	//let program = "(fn hello () (print (* 2 (+ 1 2)))) (hello) (print (quote 1 2 3)) (print (list (+ 1 1) (* 2 2)))";
+	let program = "(print (* 2 (+ 1 2))) (print (quote 1 2 3)) (print (list (+ 1 1) (* 2 2)))";
 
 	for term in read_program(program).iter() {
 		eval(term, root_bindings.clone());
@@ -430,13 +504,21 @@ fn main() {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	
+	#[test]
+	fn basic_eval() {
+		assert_eq!(
+			eval(lcell(read_list("(+ (* 2 2) 1)")), default_root()),
+			lcell(int(5))
+		);
+	}
 
 	#[test]
 	fn read_print_eq() {
 		let exp = "(0 (1 1 ()) (((A) (B C D))))";
 		let list = read_list(exp);
 		let mut outp = String::new();
-		std::fmt::write(&mut outp, format_args!("{}", list));
+		std::fmt::write(&mut outp, format_args!("{}", list)).unwrap();
 		assert_eq!(outp, exp.to_string());
 	}
 
