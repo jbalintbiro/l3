@@ -1,4 +1,4 @@
-EXECUTABLE=${TEST_EXECUTABLE:-"./target/release/l3"}
+EXECUTABLE=${TEST_EXECUTABLE:-"./target/debug/l3"}
 TESTDIR=`mktemp -d` || (echo "can't make tempdir"; exit 1)
 VERBOSE=${TEST_VERBOSE:-""}
 
