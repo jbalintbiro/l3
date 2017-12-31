@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use super::*;
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Bindings {
 	bindings: BTreeMap<String, LCell<Value>>,
 	parent: Option<LCell<Bindings>>,
@@ -42,11 +43,9 @@ pub fn make_root_bindings(funs: Vec<(&str, HostFunc)>) -> Bindings {
 	}
 }
 
-pub fn make_params(params: LCell<Value>, parent: Option<LCell<Bindings>>) -> LCell<Bindings> {
-	let mut parmap = BTreeMap::new();
-	parmap.insert("_params".to_string(), params);
-	lcell(Bindings {
-		bindings: parmap,
-		parent: parent,
-	})
+pub fn make_empty_bindings(parent: LCell<Bindings>) -> Bindings {
+	Bindings {
+		bindings: BTreeMap::new(),
+		parent: Some(parent),
+	}
 }
