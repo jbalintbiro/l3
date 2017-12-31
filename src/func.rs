@@ -1,6 +1,6 @@
 use super::*;
 
-pub type HostFunc = fn(LCell<Bindings>) -> LCell<Value>;
+pub type HostFunc = fn(LCell<Value>, LCell<Bindings>) -> LCell<Value>;
 
 #[derive(Clone)]
 pub enum Func {
@@ -9,11 +9,11 @@ pub enum Func {
 }
 
 impl Func {
-	pub fn eval(&self, env: LCell<Bindings>) -> LCell<Value> {
+	pub fn eval(&self, params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		use self::Func::*;
 		match self {
-			&NFunc(ref d) => d.eval(env),
-			&HFunc(fun) => fun(env),
+			&NFunc(ref d) => d.eval(params, env),
+			&HFunc(fun) => fun(params, env),
 		}
 	}
 }
@@ -48,15 +48,33 @@ impl fmt::Display for Func {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct FunctionDef {
-	args: Vec<String>,
-	listing: LCell<Value>,
+	pub args: Vec<String>,
+	pub listing: LCell<Value>,
+	pub env: LCell<Bindings>,
 }
 
+impl fmt::Debug for FunctionDef {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "FunctionDef {{ args: {:?}, listing: {:?} }}", self.args, self.listing)
+	}
+}
+
+
 impl FunctionDef {
-	pub fn eval(&self, env: LCell<Bindings>) -> LCell<Value> {
-		lcell(Value::Nil)
+	pub fn eval(&self, params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+		let mut func_env = make_empty_bindings(self.env.clone());
+		let mut it = params.borrow().iter();
+		for arg_name in self.args.iter() {
+			func_env.set_binding(&Value::Ident(arg_name.clone()), it.next().expect("not enough params"))
+		}
+		let func_env_boxed = lcell(func_env);
+		let mut retval = lcell(Value::Nil);
+		for expr in self.listing.borrow().iter() {
+			retval = ::eval(expr, func_env_boxed.clone());
+		}
+		retval
 	}
 }
 
