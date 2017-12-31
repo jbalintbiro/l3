@@ -1,4 +1,5 @@
 use super::*;
+use std::cmp::Ordering;
 
 pub type HostFunc = fn(LCell<Value>, LCell<Bindings>) -> LCell<Value>;
 
@@ -36,6 +37,12 @@ impl PartialEq for Func {
 			},
 			_ => false,
 		}
+	}
+}
+
+impl PartialOrd for Func {
+	fn partial_cmp(&self, other: &Func) -> Option<Ordering> {
+		None
 	}
 }
 
