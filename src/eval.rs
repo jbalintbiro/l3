@@ -4,8 +4,8 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	use Value::*;
 	match *form.borrow() {
 		Cons((ref h, ref t)) => {
-			if let Ident(ref id) = *h.borrow() {
-				match &**id {
+			match *h.borrow() {
+				Ident(ref id) => match &**id {
 					"quote" => t.clone(),
 					"fn" => eval_fn(t.clone(), env.clone()),
 					"set" => eval_set(t.clone(), env.clone()),
@@ -15,10 +15,11 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"while" => unimplemented!(),
 					"and" => eval_and(t.clone(), env.clone()),
 					"or" => eval_or(t.clone(), env.clone()),
-					_ => eval_fncall(h.clone(), t.clone(), env.clone()),
-				}
-			} else {
-				panic!("eval: not a function ident: {:?}", h)
+					_ => {
+						eval_fncall(h.clone(), t.clone(), env.clone())
+					},
+				},
+				_ => panic!("eval: not a function ident: {}", h.borrow())
 			}
 		},
 		Value::Ident(ref i) => {
@@ -149,11 +150,11 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	}
 }
 
-fn eval_fncall(fun: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+fn eval_fncall(fun_name: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let fnref;
 	{
 		let envref = env.borrow();
-		let fun_cell = envref.get_binding(&*fun.borrow());
+		let fun_cell = envref.get_binding(&*fun_name.borrow());
 		fnref = fun_cell.borrow().clone();
 	}
 	if let Value::Fn(ref fun) = fnref {
@@ -163,7 +164,7 @@ fn eval_fncall(fun: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindings>)
 		}
 		fun.eval(lcell(params.build()), env.clone())
 	} else {
-		panic!("function `{}` not known.", fun.borrow())
+		panic!("function `{}` not known.", fun_name.borrow())
 	}
 }
 

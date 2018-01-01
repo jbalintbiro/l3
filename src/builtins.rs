@@ -4,7 +4,11 @@ pub fn default_root() -> LCell<Bindings> {
 	lcell(make_root_bindings(vec![
 		("print", fn_print),
 		("list", fn_list),
-		("exit", fn_exit),
+		("eval", fn_eval),
+
+		("cons", fn_cons),
+		("head", fn_head),
+		("tail", fn_tail),
 
 		("+", fn_add),
 		("*", fn_mul),
@@ -17,6 +21,8 @@ pub fn default_root() -> LCell<Bindings> {
 		("!=", fn_ne),
 		(">", fn_gt),
 		(">=", fn_ge),
+		
+		("exit", fn_exit),
 	]))
 }
 
@@ -27,6 +33,30 @@ fn int_iter<I: Iterator<Item=LCell<Value>>>(it: I) -> impl Iterator<Item=i32> {
 			v => panic!("parameters contain something not an integer {}", v),
 		}
 	})
+}
+
+fn fn_eval(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	eval(it.next().expect("eval called without parameter"), env)
+}
+
+fn fn_cons(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let h = it.next().expect("cons called with less than 2 arguments").clone();
+	let t = it.next().expect("cons called with less than 2 arguments").clone();
+	lcell(Value::Cons((h, t)))
+}
+
+fn fn_head(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let list = params.borrow().iter().next().expect("head called without a parameter");
+	let rf = list.borrow();
+	rf.head().clone()
+}
+
+fn fn_tail(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let list = params.borrow().iter().next().expect("tail called without a parameter");
+	let rf = list.borrow();
+	rf.tail().clone()
 }
 
 fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
