@@ -18,6 +18,14 @@
 	}
 
 	#[test]
+	fn test_ident() {
+		let exp = "(ident1 ident2)";
+		let list = read_list(exp);
+		let evaluated = cons(ident("ident1"), cons(ident("ident2"), nil()));
+		assert_eq!(list, *evaluated.borrow());
+	}
+
+	#[test]
 	fn basic_parse() {
 		let program = read_program("(1) (2 3 (4 5) ((6)))");
 		let evaluated = cons(
