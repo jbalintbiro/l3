@@ -5,9 +5,12 @@ pub fn default_root() -> LCell<Bindings> {
 		("print", fn_print),
 		("list", fn_list),
 		("exit", fn_exit),
+
 		("+", fn_add),
 		("*", fn_mul),
 		("-", fn_sub),
+		("/", fn_div),
+
 		("=", fn_eq),
 		("<", fn_lt),
 		("<=", fn_le),
@@ -61,6 +64,24 @@ fn fn_sub(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	if let Some(mut acc) = it.next() {
 		lcell(int(match it.next() {
 			None => -1 * acc,
+			Some(n) => {
+				acc -= n;
+				for n in it {
+					acc -= n
+				}
+				acc
+			}
+		}))
+	} else {
+		panic!("sub called without a parameter")
+	}
+}
+
+fn fn_div(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = int_iter(params.borrow().iter());
+	if let Some(mut acc) = it.next() {
+		lcell(int(match it.next() {
+			None => panic!("div got less than 2 parameters"),
 			Some(n) => {
 				acc /= n;
 				for n in it {

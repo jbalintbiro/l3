@@ -49,6 +49,7 @@ impl Value {
 	}
 }
 
+#[derive(Clone)]
 pub struct ListIterator {
 	pos: LCell<Value>,
 }

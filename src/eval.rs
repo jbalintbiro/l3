@@ -11,7 +11,8 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"set" => eval_set(t.clone(), env.clone()),
 					"set-global" => unimplemented!(),
 					"if" => eval_if(t.clone(), env.clone()),
-					"for" => unimplemented!(),
+					"for" => eval_for(t.clone(), env.clone()),
+					"while" => unimplemented!(),
 					_ => eval_fncall(h.clone(), t.clone(), env.clone()),
 				}
 			} else {
@@ -26,6 +27,34 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		_ => form.clone()
 	}
 }
+
+fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = arguments.borrow().iter();
+	if let Some(ref name) = it.next() {
+		if let Value::Ident(ref id) = *name.borrow() {
+			let evaluated_list = eval(it.next().expect(""), env.clone());
+			let list_it = evaluated_list.borrow().iter();
+			let mut retval = ListBuilder::new();
+			for elem in list_it {
+				{
+					env.borrow_mut().set_binding(&Value::Ident(id.clone()), elem);
+				}
+				let expr_it = it.clone();
+				let mut retval_candidate = lcell(nil());
+				for rc in expr_it.map(|expr| eval(expr, env.clone())) {
+					retval_candidate = rc;
+				}
+				retval.push(retval_candidate);
+			}
+			lcell(retval.build())
+		} else {
+			panic!("Identifier expected in for expr binding")
+		}
+	} else {
+		panic!("arguments expected for for expr")
+	}
+}
+
 
 fn eval_if(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = arguments.borrow().iter();
@@ -98,10 +127,13 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn eval_fncall(fun: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let envref = env.borrow();
-	let fun_cell = envref.get_binding(&*fun.borrow());
-	let fnref = fun_cell.borrow();
-	if let Value::Fn(ref fun) = *fnref {
+	let fnref;
+	{
+		let envref = env.borrow();
+		let fun_cell = envref.get_binding(&*fun.borrow());
+		fnref = fun_cell.borrow().clone();
+	}
+	if let Value::Fn(ref fun) = fnref {
 		let mut params = ListBuilder::new();
 		for arg in arguments.borrow().iter() {
 			params.push(eval(arg, env.clone()));
