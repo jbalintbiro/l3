@@ -12,7 +12,7 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"set-global" => eval_set_global(t.clone(), env.clone()),
 					"if" => eval_if(t.clone(), env.clone()),
 					"for" => eval_for(t.clone(), env.clone()),
-					"while" => unimplemented!(),
+					"while" => eval_while(t.clone(), env.clone()),
 					"and" => eval_and(t.clone(), env.clone()),
 					"or" => eval_or(t.clone(), env.clone()),
 					_ => {
@@ -52,6 +52,23 @@ fn eval_or(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	nil()
 }
 
+fn eval_while(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = arguments.borrow().iter();
+	let predicate = it.next().expect("while needs a predicate");
+	let mut retval = nil();
+	loop {
+		let evaluated_p = eval(predicate.clone(), env.clone());
+		if !evaluated_p.borrow().truthy() {
+			break;
+		}
+		let expr_it = it.clone();
+		for ret in expr_it.map(|expr| eval(expr, env.clone())) {
+			retval = ret;
+		}
+	};
+	retval
+}
+
 fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = arguments.borrow().iter();
 	if let Some(ref name) = it.next() {
@@ -60,9 +77,7 @@ fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 			let list_it = evaluated_list.borrow().iter();
 			let mut retval = ListBuilder::new();
 			for elem in list_it {
-				{
-					env.borrow_mut().set_binding(&Value::Ident(id.clone()), elem);
-				}
+				env.borrow_mut().set_binding(&Value::Ident(id.clone()), elem);
 				let expr_it = it.clone();
 				let mut retval_candidate = nil();
 				for rc in expr_it.map(|expr| eval(expr, env.clone())) {
@@ -85,7 +100,7 @@ fn eval_if(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let predicate = it.next().expect("if needs a predicate");
 	let true_branch = it.next().expect("if needs a true branch");
 	let maybe_false_branch = it.next();
-	
+
 	let p_eval = eval(predicate, env.clone());
 	if p_eval.borrow().truthy() {
 		eval(true_branch, env)
@@ -156,7 +171,7 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		listing: listing,
 		env: lcell(make_empty_bindings(env.clone())),
 	})));
-	
+
 	if let Some(binding) = bind {
 		(*env.borrow_mut()).set_binding(&binding, fun);
 		nil()
