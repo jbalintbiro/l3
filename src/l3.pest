@@ -6,7 +6,7 @@ digit = @{ '0' .. '9' }
 integer = @{ ("+" | "-")? ~ digit+ }
 ident = @{ (!open ~ !close ~ !whitespace ~ any)+ }
 term = { integer | ident | list }
-list = { open ~ term* ~ close }
+list = { whitespace* ~ open ~ term* ~ close ~ whitespace* }
 program = { soi ~ list* ~ eoi }
 
 newline    = _{ "\n" | "\r\n" }

@@ -30,3 +30,7 @@ pub fn boolean(b: bool) -> LCell<Value> {
 	})
 }
 
+pub fn eof() -> LCell<Value> {
+	lcell(Value::EOF)
+}
+

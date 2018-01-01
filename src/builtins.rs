@@ -5,6 +5,7 @@ pub fn default_root() -> LCell<Bindings> {
 		("print", fn_print),
 		("list", fn_list),
 		("eval", fn_eval),
+		("read", fn_read),
 
 		("cons", fn_cons),
 		("head", fn_head),
@@ -23,6 +24,9 @@ pub fn default_root() -> LCell<Bindings> {
 		(">=", fn_ge),
 
 		("exit", fn_exit),
+	],
+	vec![
+		("EOF", eof()),
 	]))
 }
 
@@ -33,6 +37,10 @@ fn int_iter<I: Iterator<Item=LCell<Value>>>(it: I) -> impl Iterator<Item=i32> {
 			v => panic!("parameters contain something not an integer {}", v),
 		}
 	})
+}
+
+fn fn_read(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	read_stdin()
 }
 
 fn fn_eval(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {

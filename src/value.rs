@@ -11,6 +11,7 @@ pub enum Value {
 	Int(i32),
 	Ident(String),
 	Fn(Func),
+	EOF,
 }
 
 impl Value {
@@ -89,6 +90,7 @@ impl fmt::Display for Value {
 				write!(f, ")")
 			},
 			Value::Fn(ref fun) => write!(f, "{}", fun),
+			Value::EOF => write!(f, "EOF"),
 		}
     }
 }

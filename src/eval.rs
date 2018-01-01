@@ -15,6 +15,7 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"while" => eval_while(t.clone(), env.clone()),
 					"and" => eval_and(t.clone(), env.clone()),
 					"or" => eval_or(t.clone(), env.clone()),
+					"loop" => eval_loop(t.clone(), env.clone()),
 					_ => {
 						eval_fncall(h.clone(), t.clone(), env.clone())
 					},
@@ -50,6 +51,14 @@ fn eval_or(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		}
 	}
 	nil()
+}
+
+fn eval_loop(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = arguments.borrow().iter();
+	loop {
+		let expr_it = it.clone();
+		for ret in expr_it.map(|expr| eval(expr, env.clone())) {}
+	}
 }
 
 fn eval_while(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {

@@ -1,0 +1,4 @@
+(set _it ())
+(while (!= _it EOF)
+	(set _it (eval(read)))
+	(print _it))

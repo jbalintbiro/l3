@@ -3,12 +3,17 @@
 
 #[macro_use]
 extern crate clap;
+
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
+
+extern crate gc;
 #[macro_use]
 extern crate gc_derive;
-extern crate gc;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[allow(unused_imports)]
 use pest::Parser;

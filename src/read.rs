@@ -19,3 +19,35 @@ pub fn read_list(inp: &str) -> Value {
 	parse(pairs)
 }
 
+use std::sync::Mutex;
+lazy_static!{
+	static ref INBUF: Mutex<String> = Mutex::new(String::new());
+}
+
+pub fn read_stdin() -> LCell<Value> {
+	use std::io::{self, Read};
+	{
+		while !L3Parser::parse_str(Rule::list, &INBUF.lock().expect("STDIN BUFFER POISIONED!")).is_ok() {
+			let readlen = io::stdin().read_line(&mut INBUF.lock().expect("STDIN BUFFER POISIONED!"))
+				.expect("stdin read error");
+			if readlen == 0 {
+				return eof()
+			}
+		}
+	}
+	let good: String = { INBUF.lock().unwrap().clone() };
+	match L3Parser::parse_str(Rule::list, &good) {
+		Ok(mut pairs) => {
+			if let Some(pair) = pairs.clone().next() {
+				let len = pair.into_span().end();
+				let remainder = { INBUF.lock().unwrap().split_off(len) };
+				{ *INBUF.lock().unwrap() = remainder; }
+				lcell(parse(pairs))
+			} else {
+				panic!("read: something deeply wrong")
+			}
+		}
+		_ => nil(),
+	}
+}
+

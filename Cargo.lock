@@ -54,9 +54,15 @@ dependencies = [
  "clap 2.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gc 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "gc_derive 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest 1.0.0-beta.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest_derive 1.0.0-beta.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "lazy_static"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libc"
@@ -196,6 +202,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum clap 2.29.0 (registry+https://github.com/rust-lang/crates.io-index)" = "110d43e343eb29f4f51c1db31beb879d546db27998577e5715270a54bcf41d3f"
 "checksum gc 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "630b15fafc2270fc89de904da9ebb8b950642a5ed7bd99ec3f95558b0831ea9a"
 "checksum gc_derive 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "2501c15cbaf28a0c2214617aa85351982a933161d7937fe6cd71c855364e0ea6"
+"checksum lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c8f31047daa365f19be14b47c29df4f7c3b581832407daabe6ae77397619237d"
 "checksum libc 0.2.34 (registry+https://github.com/rust-lang/crates.io-index)" = "36fbc8a8929c632868295d0178dd8f63fc423fd7537ad0738372bd010b3ac9b0"
 "checksum pest 1.0.0-beta.17 (registry+https://github.com/rust-lang/crates.io-index)" = "e522b9cfbc9761d835914be9166262c45d945a9c41eb68d3ee7b8d82558bec39"
 "checksum pest_derive 1.0.0-beta.17 (registry+https://github.com/rust-lang/crates.io-index)" = "251f72914b138db9d876364d0d1b1dca988ee71139fb9a2fde3a66805de7b1b6"
