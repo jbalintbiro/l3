@@ -1,6 +1,7 @@
+#!/bin/bash
 EXECUTABLE=${TEST_EXECUTABLE:-"./target/debug/l3"}
-TESTDIR=`mktemp -d` || (echo "can't make tempdir"; exit 1)
 VERBOSE=${TEST_VERBOSE:-""}
+TESTDIR=`mktemp -d` || (echo "can't make tempdir"; exit 1)
 
 FAILED=""
 NUM_PASS="0"
@@ -28,12 +29,12 @@ function test_fail {
 }
 
 function results {
-	RESULTS="$((NUM_PASS)) / $((NUM_PASS + NUM_FAILED))"
+	RESULTS="$((NUM_PASS)) / $((NUM_PASS + NUM_FAILED)) passed"
 	if [ -n "$FAILED" ] 
 	then
-		echo $(tput setaf 1)FAILED$(tput sgr0) - $RESULTS passed
+		echo $(tput setaf 1)FAILED$(tput sgr0) - $RESULTS
 	else
-		echo $(tput setaf 2)OK$(tput sgr0)
+		echo $(tput setaf 2)OK$(tput sgr0) - $RESULTS
 	fi
 }
 
