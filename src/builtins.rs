@@ -3,13 +3,14 @@ use super::*;
 pub fn default_root() -> LCell<Bindings> {
 	lcell(make_root_bindings(vec![
 		("print", fn_print),
-		("list", fn_list),
 		("eval", fn_eval),
 		("read", fn_read),
 
 		("cons", fn_cons),
+		("list", fn_list),
 		("head", fn_head),
 		("tail", fn_tail),
+		("cat", fn_cat),
 		("#", fn_idx),
 
 		("+", fn_add),
@@ -81,7 +82,7 @@ fn fn_idx(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 		panic!("idx called with wrong index")
 	}
 
-	let mut list = it.next().expect("idx missing list");
+	let list = it.next().expect("idx missing list");
 	let mut list_it = list.borrow().iter();
 
 	let mut count = idx;
@@ -102,6 +103,16 @@ fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 
 fn fn_list(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	lcell(params.borrow().iter().collect::<Value>())
+}
+
+fn fn_cat(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut builder = ListBuilder::new();
+	for p in params.borrow().iter() {
+		for e in p.borrow().iter() {
+			builder.push(e);
+		}
+	}
+	lcell(builder.build())
 }
 
 fn fn_exit(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {

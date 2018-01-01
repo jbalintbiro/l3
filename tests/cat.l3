@@ -1,0 +1,4 @@
+(print
+	(= 
+		(list 1 2 3 4 5 6 7)
+		(cat (list 1 2 3) (list 4 5 6) (list 7))))
