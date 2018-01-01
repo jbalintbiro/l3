@@ -32,6 +32,8 @@ pub fn default_root() -> LCell<Bindings> {
 	root_macros(),
 	vec![
 		("EOF", eof()),
+		("true", boolean(true)),
+		("false", boolean(false)),
 	]))
 }
 
