@@ -22,7 +22,7 @@ impl Value {
 			ref v => panic!("head called on something not a list! {:?}", v),
 		}
 	}
-	
+
 	pub fn tail(&self) -> LCell<Value> {
 		match *self {
 			Value::Cons((_, ref c)) => {

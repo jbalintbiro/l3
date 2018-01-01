@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn lcell<T>(v: T) -> LCell<T> 
+pub fn lcell<T>(v: T) -> LCell<T>
 	where T: gc::Trace + gc::Finalize {
     Gc::new(GcCell::new(v))
 }

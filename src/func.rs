@@ -48,7 +48,7 @@ impl PartialOrd for Func {
 
 impl fmt::Display for Func {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		match self { 
+		match self {
 			&Func::NFunc(ref fun) => write!(f, "{}", fun),
 			&Func::HFunc(_) => write!(f, "<Host Function>"),
 		}

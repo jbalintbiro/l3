@@ -1,0 +1,7 @@
+(set c 10)
+(set r 0)
+(while
+	(< c 0)
+	(set c (- c 1))
+	(set r (+ r 1)))
+(print r)

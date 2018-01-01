@@ -21,7 +21,7 @@ pub fn default_root() -> LCell<Bindings> {
 		("!=", fn_ne),
 		(">", fn_gt),
 		(">=", fn_ge),
-		
+
 		("exit", fn_exit),
 	]))
 }

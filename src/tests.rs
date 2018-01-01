@@ -1,5 +1,5 @@
 	use super::*;
-	
+
 	#[test]
 	fn basic_eval() {
 		assert_eq!(
@@ -32,20 +32,20 @@
 			cons(int(1), nil()),
 			cons(
 				cons(
-					int(2), 
-					cons(int(3), 
+					int(2),
+					cons(int(3),
 						cons(
 							cons(
-								int(4), 
+								int(4),
 								cons(int(5), nil())
-							), 
+							),
 							cons(
 								cons(
-									cons(int(6),nil()), 
+									cons(int(6),nil()),
 									nil()
-								), 
+								),
 								nil()
-							), 
+							),
 						),
 					),
 				),
@@ -61,7 +61,7 @@
 		let head = l.head();
 		assert_eq!(Value::Int(1), *head.borrow());
 	}
-	
+
 	#[test]
 	fn head_write() {
 		let l = read_list("(1 2 3)");
@@ -70,7 +70,7 @@
 		let l2 = read_list("(4 2 3)");
 		assert_eq!(l, l2);
 	}
-	
+
 	#[test]
 	fn tail_read() {
 		let l = read_list("(1 2 3)");
@@ -78,7 +78,7 @@
 		let l2 = read_list("(2 3)");
 		assert_eq!(*tail.borrow(), l2);
 	}
-	
+
 	#[test]
 	fn tail_write() {
 		let l = read_list("(1 2 3)");
