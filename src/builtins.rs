@@ -10,9 +10,13 @@ pub fn default_root() -> LCell<Bindings> {
 		("list", fn_list),
 		("head", fn_head),
 		("tail", fn_tail),
+		("last", fn_last),
 		("cat", fn_cat),
 		("#", fn_idx),
-		("filter", fn_filter),
+
+//		("list?", fn_is_list),
+//		("int?", fn_is_int),
+//		("bool?", fn_is_bool),
 
 		("+", fn_add),
 		("*", fn_mul),
@@ -42,8 +46,18 @@ fn fn_read(_params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn fn_eval(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let mut it = params.borrow().iter();
-	eval(it.next().expect("eval called without parameter"), env)
+	let mut retval = nil();
+	for expr in params.borrow().iter() {
+		retval = eval(expr, env.clone());
+	}
+	retval
+}
+
+fn fn_last(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	match params.borrow().iter().last() {
+		None => nil(),
+		Some(v) => v.clone(),
+	}
 }
 
 fn fn_cons(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {

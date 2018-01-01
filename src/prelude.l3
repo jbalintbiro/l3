@@ -1,0 +1,17 @@
+(fn filter (pred ls)
+	(if (= ls ()) 
+		(quote)
+		(last
+			(set h (head ls))
+			(set next (filter pred (tail ls)))
+			(if (pred h)
+				(cons h next)
+				next))))
+
+(fn apply (f args)
+	(eval (cons f args)))
+
+(fn fold (op acc ls)
+	(if (= ls ())
+		acc
+		(fold op (op acc (head ls)) (tail ls))))

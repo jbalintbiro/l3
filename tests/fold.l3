@@ -1,0 +1,3 @@
+(print (list
+	(fold + 0 ())
+	(fold + 0 (list 1 1 1 1 1 1 1))))

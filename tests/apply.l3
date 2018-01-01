@@ -1,0 +1,2 @@
+(print
+	(apply (fn (x y z) (* z y z)) (list 2 2 2)))

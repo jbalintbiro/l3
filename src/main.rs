@@ -33,6 +33,8 @@ macro_rules! import_submodules {
 
 import_submodules!(value, func, parse, internals, eval, bindings, builtins, read);
 
+const PRELUDE: &'static str = include_str!("prelude.l3");
+
 fn main() {
 	let opts = App::new(crate_name!())
 					.version(crate_version!())
@@ -45,6 +47,9 @@ fn main() {
 
 	let infile = opts.value_of("INPUT").unwrap();
 	let root_bindings = default_root();
+	for term in read_program(PRELUDE).iter() {
+		eval(term, root_bindings.clone());
+	}
 	for term in read_program_file(infile).iter() {
 		eval(term, root_bindings.clone());
 	}
