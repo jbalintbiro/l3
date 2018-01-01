@@ -1,0 +1,4 @@
+(fn foo (x)
+	(fn bar (y) (+ x y))
+	(bar 1))
+(print (foo 1))
