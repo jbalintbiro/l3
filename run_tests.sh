@@ -39,7 +39,7 @@ function results {
 }
 
 function run {
-	$EXECUTABLE $TEST > $TESTDIR/out 2> $TESTDIR/err 
+	echo -n | $EXECUTABLE $TEST > $TESTDIR/out 2> $TESTDIR/err 
 }
 
 function test_cleanup {
