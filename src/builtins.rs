@@ -12,11 +12,13 @@ pub fn default_root() -> LCell<Bindings> {
 		("tail", fn_tail),
 		("cat", fn_cat),
 		("#", fn_idx),
+		("filter", fn_filter),
 
 		("+", fn_add),
 		("*", fn_mul),
 		("-", fn_sub),
 		("/", fn_div),
+		("mod", fn_mod),
 
 		("=", fn_eq),
 		("<", fn_lt),
@@ -31,15 +33,6 @@ pub fn default_root() -> LCell<Bindings> {
 	vec![
 		("EOF", eof()),
 	]))
-}
-
-fn int_iter<I: Iterator<Item=LCell<Value>>>(it: I) -> impl Iterator<Item=i32> {
-	it.map(|v| {
-		match &*v.borrow() {
-			&Value::Int(i) => i,
-			v => panic!("parameters contain something not an integer {}", v),
-		}
-	})
 }
 
 fn fn_read(_params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
@@ -106,6 +99,21 @@ fn fn_list(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	lcell(params.borrow().iter().collect::<Value>())
 }
 
+fn fn_filter(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let pred = it.next().expect("filter called without predicate");
+	let list = it.next().expect("filter called without list");
+	let mut builder = ListBuilder::new();
+	for e in list.borrow().iter() {
+		let expr = cons(pred.clone(), cons(e.clone(), nil()));
+		let evaluated = eval(expr, env.clone());
+		if evaluated.borrow().truthy() {
+			builder.push(e);
+		}
+	}
+	lcell(builder.build())
+}
+
 fn fn_cat(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	let mut builder = ListBuilder::new();
 	for p in params.borrow().iter() {
@@ -125,6 +133,15 @@ fn fn_exit(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 		}
 	};
 	std::process::exit(code);
+}
+
+fn int_iter<I: Iterator<Item=LCell<Value>>>(it: I) -> impl Iterator<Item=i32> {
+	it.map(|v| {
+		match &*v.borrow() {
+			&Value::Int(i) => i,
+			v => panic!("parameters contain something not an integer {}", v),
+		}
+	})
 }
 
 fn fn_add(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
@@ -169,6 +186,13 @@ fn fn_div(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	} else {
 		panic!("sub called without a parameter")
 	}
+}
+
+fn fn_mod(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = int_iter(params.borrow().iter());
+	let n = it.next().expect("mod called without parameters");
+	let m = it.next().expect("mod called with less than 2 parameters");
+	int(n % m)
 }
 
 macro_rules! make_comparison {
