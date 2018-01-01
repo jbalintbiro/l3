@@ -13,6 +13,8 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"if" => eval_if(t.clone(), env.clone()),
 					"for" => eval_for(t.clone(), env.clone()),
 					"while" => unimplemented!(),
+					"and" => eval_and(t.clone(), env.clone()),
+					"or" => eval_or(t.clone(), env.clone()),
 					_ => eval_fncall(h.clone(), t.clone(), env.clone()),
 				}
 			} else {
@@ -26,6 +28,27 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		}
 		_ => form.clone()
 	}
+}
+
+fn eval_and(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut retval = lcell(nil());
+	for expr in arguments.borrow().iter() {
+		retval = eval(expr, env.clone());
+		if !retval.borrow().truthy() {
+			return lcell(Value::Nil);
+		}
+	}
+	retval
+}
+
+fn eval_or(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	for expr in arguments.borrow().iter() {
+		let value = eval(expr, env.clone());
+		if value.borrow().truthy() {
+			return value.clone();
+		}
+	}
+	lcell(Value::Nil)
 }
 
 fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
