@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 
 pub type HostFunc = fn(LCell<Value>, LCell<Bindings>) -> LCell<Value>;
 
-#[derive(Clone)]
+#[derive(Clone, Finalize, Trace)]
 pub enum Func {
 	NFunc(FunctionDef),
 	HFunc(HostFunc),
@@ -55,7 +55,7 @@ impl fmt::Display for Func {
 	}
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Trace, Finalize)]
 pub struct FunctionDef {
 	pub args: Vec<String>,
 	pub listing: LCell<Value>,
@@ -98,7 +98,7 @@ impl fmt::Display for FunctionDef {
 			write!(f, "{}", arg)?;
 		}
 		write!(f, ")")?;
-		write!(f, "{}", self.listing.borrow())?;
+		write!(f, "{}", &*self.listing.borrow())?;
 		write!(f, ")")
 	}
 }

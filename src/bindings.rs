@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use super::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Trace, Finalize)]
 pub struct Bindings {
 	bindings: BTreeMap<String, LCell<Value>>,
 	parent: Option<LCell<Bindings>>,

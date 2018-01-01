@@ -8,4 +8,6 @@ description = "Interpreter for the L3 language"
 clap = "2"
 pest = "^1.0.0-beta"
 pest_derive = "^1.0.0-beta"
+gc = "*"
+gc_derive = "*"
 

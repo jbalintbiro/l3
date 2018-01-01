@@ -1,8 +1,8 @@
 use super::*;
 
-pub type LCell<T> = Rc<RefCell<T>>;
+pub type LCell<T> = Gc<GcCell<T>>;
 
-#[derive(Debug, PartialEq, Clone, PartialOrd)]
+#[derive(Debug, PartialEq, Clone, PartialOrd, Trace, Finalize)]
 pub enum Value {
 	Nil,
 	Cons((LCell<Value>, LCell<Value>)),
@@ -95,7 +95,7 @@ impl fmt::Display for Value {
 
 fn print_list_inner(inner: &(LCell<Value>, LCell<Value>), f: &mut fmt::Formatter) -> fmt::Result {
 	let (ref h, ref t) = *inner;
-	write!(f, "{}", h.borrow())?;
+	write!(f, "{}", &*h.borrow())?;
 	match *t.borrow() {
 		Value::Nil => {},
 		Value::Cons(ref i) => {

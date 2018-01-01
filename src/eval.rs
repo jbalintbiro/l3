@@ -19,7 +19,7 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 						eval_fncall(h.clone(), t.clone(), env.clone())
 					},
 				},
-				_ => panic!("eval: not a function ident: {}", h.borrow())
+				_ => panic!("eval: not a function ident: {}", &*h.borrow())
 			}
 		},
 		Value::Ident(ref i) => {
@@ -164,7 +164,7 @@ fn eval_fncall(fun_name: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindi
 		}
 		fun.eval(lcell(params.build()), env.clone())
 	} else {
-		panic!("function `{}` not known.", fun_name.borrow())
+		panic!("function `{}` not known.", &*fun_name.borrow())
 	}
 }
 

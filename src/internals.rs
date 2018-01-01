@@ -1,14 +1,12 @@
 use super::*;
 
-pub fn lcell<T>(v: T) -> LCell<T> {
-    Rc::new(RefCell::new(v))
+pub fn lcell<T>(v: T) -> LCell<T> 
+	where T: gc::Trace + gc::Finalize {
+    Gc::new(GcCell::new(v))
 }
 
 pub fn cons(head: Value, tail: Value) -> Value {
-	Value::Cons((
-		Rc::new(RefCell::new(head)),
-		Rc::new(RefCell::new(tail))
-	))
+	Value::Cons((lcell(head), lcell(tail)))
 }
 
 pub fn int(i: i32) -> Value {

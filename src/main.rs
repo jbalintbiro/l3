@@ -6,16 +6,20 @@ extern crate clap;
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
+#[macro_use]
+extern crate gc_derive;
+extern crate gc;
 
 #[allow(unused_imports)]
 use pest::Parser;
 
 use std::fmt;
 use std::rc::Rc;
-use std::cell::RefCell;
 use std::iter::FromIterator;
 
 use clap::{Arg, App};
+
+use gc::{Gc, GcCell};
 
 macro_rules! import_submodules {
 	($m:ident) => (mod $m; use $m::*;);

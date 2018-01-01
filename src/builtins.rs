@@ -61,7 +61,7 @@ fn fn_tail(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 
 fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	for p in params.borrow().iter() {
-		println!("{}", p.borrow());
+		println!("{}", &*p.borrow());
 	}
 	lcell(Value::True)
 }
