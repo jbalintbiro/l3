@@ -3,12 +3,16 @@ TESTDIR=`mktemp -d` || (echo "can't make tempdir"; exit 1)
 VERBOSE=${TEST_VERBOSE:-""}
 
 FAILED=""
+NUM_PASS="0"
+NUM_FAILED="0"
 
 function test_pass {
+	NUM_PASS=$((NUM_PASS + 1))
 	echo "$TESTNAME - $(tput setaf 2)pass$(tput sgr0)"
 }
 
 function test_fail {
+	NUM_FAILED=$((NUM_FAILED + 1))
 	FAILED="${FAILED} ${TESTNAME}"
 	echo "$TESTNAME - $(tput setaf 1)fail$(tput sgr0)"
 	if [ -n "$VERBOSE" ]
@@ -20,6 +24,16 @@ function test_fail {
 		cat tests/${TESTNAME}.out
 		echo errors:
 		cat $TESTDIR/err
+	fi
+}
+
+function results {
+	RESULTS="$((NUM_PASS)) / $((NUM_PASS + NUM_FAILED))"
+	if [ -n "$FAILED" ] 
+	then
+		echo $(tput setaf 1)FAILED$(tput sgr0) - $RESULTS passed
+	else
+		echo $(tput setaf 2)OK$(tput sgr0)
 	fi
 }
 
@@ -68,9 +82,10 @@ done
 
 rm -r $TESTDIR
 
+results
+
 if [ -n "$FAILED" ]
 then
-	echo some tests failed!
 	exit 1
 fi
 
