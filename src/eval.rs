@@ -9,7 +9,7 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					"quote" => t.clone(),
 					"fn" => eval_fn(t.clone(), env.clone()),
 					"set" => eval_set(t.clone(), env.clone()),
-					"set-global" => unimplemented!(),
+					"set-global" => eval_set_global(t.clone(), env.clone()),
 					"if" => eval_if(t.clone(), env.clone()),
 					"for" => eval_for(t.clone(), env.clone()),
 					"while" => unimplemented!(),
@@ -95,6 +95,21 @@ fn eval_if(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		} else {
 			nil()
 		}
+	}
+}
+
+fn eval_set_global(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = arguments.borrow().iter();
+	if let Some(first) = it.next() {
+		if let Value::Ident(_) = *first.borrow() {
+			let evaluated = eval(it.next().unwrap(), env.clone());
+			(*env.borrow_mut()).set_root_binding(&first.borrow(), evaluated.clone());
+			evaluated
+		} else {
+			panic!("set-global got something else than an identifier")
+		}
+	} else {
+		panic!("set-global called without parameters")
 	}
 }
 

@@ -1,0 +1,4 @@
+(fn foo ()
+	(set-global bar 1))
+(foo)
+(print bar)

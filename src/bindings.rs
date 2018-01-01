@@ -30,6 +30,19 @@ impl Bindings {
 			panic!("set_binding called with not an ident")
 		}
 	}
+
+	pub fn set_root_binding(&mut self, id: &Value, v: LCell<Value>) {
+		if let Some(ref mut parent) = self.parent {
+			parent.borrow_mut().set_root_binding(id, v);
+		} else {
+			if let &Value::Ident(ref i) = id {
+				let mut bind_map = &mut self.bindings;
+				bind_map.insert(i.clone(), v);
+			} else {
+				panic!("set_binding called with not an ident")
+			}
+		}
+	}
 }
 
 pub fn make_root_bindings(funs: Vec<(&str, HostFunc)>) -> Bindings {
