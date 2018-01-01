@@ -1,0 +1,10 @@
+(print (list
+	(list? ())
+	(list? (list 1 1))
+	(list? 2)
+	(int? 2)
+	(int? ())
+	(int? false)
+	(bool? true)
+	(bool? false)
+	(bool? (list 1 1))))

@@ -14,9 +14,9 @@ pub fn default_root() -> LCell<Bindings> {
 		("cat", fn_cat),
 		("#", fn_idx),
 
-//		("list?", fn_is_list),
-//		("int?", fn_is_int),
-//		("bool?", fn_is_bool),
+		("list?", fn_is_list),
+		("int?", fn_is_int),
+		("bool?", fn_is_bool),
 
 		("+", fn_add),
 		("*", fn_mul),
@@ -39,6 +39,36 @@ pub fn default_root() -> LCell<Bindings> {
 		("true", boolean(true)),
 		("false", boolean(false)),
 	]))
+}
+
+fn fn_is_list(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let first = it.next().expect("list? called without parameters");
+	let fref = first.borrow();
+	match *fref {
+		Value::Cons(_) | Value::Nil => boolean(true),
+		_ => boolean(false),
+	}
+}
+
+fn fn_is_int(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let first = it.next().expect("list? called without parameters");
+	let fref = first.borrow();
+	match *fref {
+		Value::Int(_) => boolean(true),
+		_ => boolean(false),
+	}
+}
+
+fn fn_is_bool(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let first = it.next().expect("list? called without parameters");
+	let fref = first.borrow();
+	match *fref {
+		Value::False | Value::True => boolean(true),
+		_ => boolean(false),
+	}
 }
 
 fn fn_read(_params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
