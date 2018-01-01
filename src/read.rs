@@ -25,7 +25,7 @@ lazy_static!{
 }
 
 pub fn read_stdin() -> LCell<Value> {
-	use std::io::{self, Read};
+	use std::io;
 	{
 		while !L3Parser::parse_str(Rule::list, &INBUF.lock().expect("STDIN BUFFER POISIONED!")).is_ok() {
 			let readlen = io::stdin().read_line(&mut INBUF.lock().expect("STDIN BUFFER POISIONED!"))
@@ -37,7 +37,7 @@ pub fn read_stdin() -> LCell<Value> {
 	}
 	let good: String = { INBUF.lock().unwrap().clone() };
 	match L3Parser::parse_str(Rule::list, &good) {
-		Ok(mut pairs) => {
+		Ok(pairs) => {
 			if let Some(pair) = pairs.clone().next() {
 				let len = pair.into_span().end();
 				let remainder = { INBUF.lock().unwrap().split_off(len) };

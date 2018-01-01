@@ -54,10 +54,10 @@ fn eval_or(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn eval_loop(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let mut it = arguments.borrow().iter();
+	let it = arguments.borrow().iter();
 	loop {
 		let expr_it = it.clone();
-		for ret in expr_it.map(|expr| eval(expr, env.clone())) {}
+		for _ in expr_it.map(|expr| eval(expr, env.clone())) {}
 	}
 }
 

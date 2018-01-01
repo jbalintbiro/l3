@@ -39,7 +39,7 @@ fn int_iter<I: Iterator<Item=LCell<Value>>>(it: I) -> impl Iterator<Item=i32> {
 	})
 }
 
-fn fn_read(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+fn fn_read(_params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	read_stdin()
 }
 
