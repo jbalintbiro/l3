@@ -1,2 +1,5 @@
+;; READ-EVAL-PRINT-LOOP 
+;; Warning: goes to infinite loop on eof!
+
 (loop
 	(print (eval (read))))
