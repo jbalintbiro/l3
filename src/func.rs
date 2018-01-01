@@ -41,7 +41,7 @@ impl PartialEq for Func {
 }
 
 impl PartialOrd for Func {
-	fn partial_cmp(&self, other: &Func) -> Option<Ordering> {
+	fn partial_cmp(&self, _other: &Func) -> Option<Ordering> {
 		None
 	}
 }
@@ -70,14 +70,14 @@ impl fmt::Debug for FunctionDef {
 
 
 impl FunctionDef {
-	pub fn eval(&self, params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	pub fn eval(&self, params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 		let mut func_env = make_empty_bindings(self.env.clone());
 		let mut it = params.borrow().iter();
 		for arg_name in self.args.iter() {
 			func_env.set_binding(&Value::Ident(arg_name.clone()), it.next().expect("not enough params"))
 		}
 		let func_env_boxed = lcell(func_env);
-		let mut retval = lcell(Value::Nil);
+		let mut retval = nil();
 		for expr in self.listing.borrow().iter() {
 			retval = ::eval(expr, func_env_boxed.clone());
 		}

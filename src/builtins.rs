@@ -44,7 +44,7 @@ fn fn_cons(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = params.borrow().iter();
 	let h = it.next().expect("cons called with less than 2 arguments").clone();
 	let t = it.next().expect("cons called with less than 2 arguments").clone();
-	lcell(Value::Cons((h, t)))
+	cons(h, t)
 }
 
 fn fn_head(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
@@ -63,7 +63,7 @@ fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	for p in params.borrow().iter() {
 		println!("{}", &*p.borrow());
 	}
-	lcell(Value::True)
+	boolean(true)
 }
 
 fn fn_list(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
@@ -82,17 +82,17 @@ fn fn_exit(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn fn_add(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
-	lcell(int(int_iter(params.borrow().iter()).sum()))
+	int(int_iter(params.borrow().iter()).sum())
 }
 
 fn fn_mul(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
-	lcell(int(int_iter(params.borrow().iter()).product()))
+	int(int_iter(params.borrow().iter()).product())
 }
 
 fn fn_sub(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = int_iter(params.borrow().iter());
 	if let Some(mut acc) = it.next() {
-		lcell(int(match it.next() {
+		int(match it.next() {
 			None => -1 * acc,
 			Some(n) => {
 				acc -= n;
@@ -101,7 +101,7 @@ fn fn_sub(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 				}
 				acc
 			}
-		}))
+		})
 	} else {
 		panic!("sub called without a parameter")
 	}
@@ -110,7 +110,7 @@ fn fn_sub(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 fn fn_div(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = int_iter(params.borrow().iter());
 	if let Some(mut acc) = it.next() {
-		lcell(int(match it.next() {
+		int(match it.next() {
 			None => panic!("div got less than 2 parameters"),
 			Some(n) => {
 				acc /= n;
@@ -119,7 +119,7 @@ fn fn_div(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 				}
 				acc
 			}
-		}))
+		})
 	} else {
 		panic!("sub called without a parameter")
 	}
@@ -131,9 +131,9 @@ macro_rules! make_comparison {
 			let mut it = params.borrow().iter();
 			let v0 = it.next().expect("comparison called without parameters");
 			for v in it {
-				if v $invert v0 { return lcell(Value::False); }
+				if v $invert v0 { return boolean(false); }
 			}
-			lcell(Value::True)
+			boolean(true)
 		}
 	)
 }

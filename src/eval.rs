@@ -32,11 +32,11 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn eval_and(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let mut retval = lcell(nil());
+	let mut retval = nil();
 	for expr in arguments.borrow().iter() {
 		retval = eval(expr, env.clone());
 		if !retval.borrow().truthy() {
-			return lcell(Value::Nil);
+			return nil();
 		}
 	}
 	retval
@@ -49,7 +49,7 @@ fn eval_or(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 			return value.clone();
 		}
 	}
-	lcell(Value::Nil)
+	nil()
 }
 
 fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
@@ -64,7 +64,7 @@ fn eval_for(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 					env.borrow_mut().set_binding(&Value::Ident(id.clone()), elem);
 				}
 				let expr_it = it.clone();
-				let mut retval_candidate = lcell(nil());
+				let mut retval_candidate = nil();
 				for rc in expr_it.map(|expr| eval(expr, env.clone())) {
 					retval_candidate = rc;
 				}
@@ -93,7 +93,7 @@ fn eval_if(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		if let Some(false_branch) = maybe_false_branch {
 			eval(false_branch, env)
 		} else {
-			lcell(nil())
+			nil()
 		}
 	}
 }
@@ -101,7 +101,7 @@ fn eval_if(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 fn eval_set(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = arguments.borrow().iter();
 	if let Some(first) = it.next() {
-		if let Value::Ident(ref name) = *first.borrow() {
+		if let Value::Ident(_) = *first.borrow() {
 			let evaluated = eval(it.next().unwrap(), env.clone());
 			(*env.borrow_mut()).set_binding(&first.borrow(), evaluated.clone());
 			evaluated
@@ -116,7 +116,7 @@ fn eval_set(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	let mut it = arguments.borrow().iter();
 	let first = it.next().expect("fn called without arguments");
-	let bind = if let Value::Ident(ref id) = *first.borrow() {
+	let bind = if let Value::Ident(_) = *first.borrow() {
 		Some(first.borrow())
 	} else { None };
 
@@ -144,7 +144,7 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	
 	if let Some(binding) = bind {
 		(*env.borrow_mut()).set_binding(&binding, fun);
-		lcell(nil())
+		nil()
 	} else {
 		fun
 	}

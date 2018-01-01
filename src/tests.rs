@@ -4,7 +4,7 @@
 	fn basic_eval() {
 		assert_eq!(
 			eval(lcell(read_list("(+ (* 2 3) 1)")), default_root()),
-			lcell(int(7))
+			int(7)
 		);
 	}
 
@@ -19,33 +19,32 @@
 
 	#[test]
 	fn basic_parse() {
-		assert_eq!(
-			read_program("(1) (2 3 (4 5) ((6)))"),
+		let program = read_program("(1) (2 3 (4 5) ((6)))");
+		let evaluated = cons(
+			cons(int(1), nil()),
 			cons(
-				cons(int(1), nil()),
 				cons(
-					cons(
-						int(2), 
-						cons(int(3), 
+					int(2), 
+					cons(int(3), 
+						cons(
+							cons(
+								int(4), 
+								cons(int(5), nil())
+							), 
 							cons(
 								cons(
-									int(4), 
-									cons(int(5), nil())
-								), 
-								cons(
-									cons(
-										cons(int(6),nil()), 
-										nil()
-									), 
+									cons(int(6),nil()), 
 									nil()
 								), 
-							),
+								nil()
+							), 
 						),
 					),
-					nil()
-				)
+				),
+				nil()
 			)
 		);
+		assert_eq!(program, *evaluated.borrow());
 	}
 
 	#[test]
@@ -87,7 +86,7 @@
 		let l = read_list("(1 2 3)");
 		for b in l.iter() {
 			println!("{:?}", b);
-			*b.borrow_mut() = int(6);
+			*b.borrow_mut() = Value::Int(6);
 		}
 		let ans = read_list("(6 6 6)");
 		assert_eq!(l, ans);
