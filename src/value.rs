@@ -2,7 +2,7 @@ use super::*;
 
 pub type LCell<T> = Rc<RefCell<T>>;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, PartialOrd)]
 pub enum Value {
 	Nil,
 	Cons((LCell<Value>, LCell<Value>)),
@@ -40,8 +40,16 @@ impl Value {
 			ref v => panic!("trying to get an iterator for something not a list! {:?}", v),
 		}
 	}
+
+	pub fn truthy(&self) -> bool {
+		match self {
+			&Value::Nil | &Value::False => false,
+			_ => true,
+		}
+	}
 }
 
+#[derive(Clone)]
 pub struct ListIterator {
 	pos: LCell<Value>,
 }

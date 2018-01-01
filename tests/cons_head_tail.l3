@@ -1,0 +1,2 @@
+(set foo (cons 1 2))
+(print (head foo) (tail foo))
