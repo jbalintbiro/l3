@@ -27,6 +27,7 @@ pub fn default_root() -> LCell<Bindings> {
 
 		("exit", fn_exit),
 	],
+	root_macros(),
 	vec![
 		("EOF", eof()),
 	]))

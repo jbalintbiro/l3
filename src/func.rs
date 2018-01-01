@@ -68,7 +68,6 @@ impl fmt::Debug for FunctionDef {
 	}
 }
 
-
 impl FunctionDef {
 	pub fn eval(&self, params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 		let mut func_env = make_empty_bindings(self.env.clone());
@@ -87,7 +86,7 @@ impl FunctionDef {
 
 impl fmt::Display for FunctionDef {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "(fn (")?;
+		write!(f, "(")?;
 		let mut first = true;
 		for arg in self.args.iter() {
 			if first {
@@ -98,7 +97,6 @@ impl fmt::Display for FunctionDef {
 			write!(f, "{}", arg)?;
 		}
 		write!(f, ")")?;
-		write!(f, "{}", &*self.listing.borrow())?;
-		write!(f, ")")
+		write!(f, "{}", &*self.listing.borrow())
 	}
 }

@@ -1,26 +1,36 @@
 use super::*;
 
+pub fn root_macros() -> Vec<(&'static str, HostFunc)> {
+	vec![
+		("quote", eval_quote),
+		("fn", eval_fn),
+		("set", eval_set),
+		("set-global", eval_set_global),
+		("if", eval_if),
+		("for", eval_for),
+		("while", eval_while),
+		("and", eval_and),
+		("or", eval_or),
+		("loop", eval_loop),
+	]
+}
+
 pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	use Value::*;
 	match *form.borrow() {
 		Cons((ref h, ref t)) => {
-			match *h.borrow() {
-				Ident(ref id) => match &**id {
-					"quote" => t.clone(),
-					"fn" => eval_fn(t.clone(), env.clone()),
-					"set" => eval_set(t.clone(), env.clone()),
-					"set-global" => eval_set_global(t.clone(), env.clone()),
-					"if" => eval_if(t.clone(), env.clone()),
-					"for" => eval_for(t.clone(), env.clone()),
-					"while" => eval_while(t.clone(), env.clone()),
-					"and" => eval_and(t.clone(), env.clone()),
-					"or" => eval_or(t.clone(), env.clone()),
-					"loop" => eval_loop(t.clone(), env.clone()),
-					_ => {
-						eval_fncall(h.clone(), t.clone(), env.clone())
-					},
+			let evaluated = eval(h.clone(), env.clone());
+			let evref = evaluated.borrow();
+			match *evref {
+				Value::Fn(ref fun) => {
+					fun.eval(eval_args(t.clone(), env.clone()), env.clone())
 				},
-				_ => panic!("eval: not a function ident: {}", &*h.borrow())
+				Value::Macro(ref mac) => {
+					mac.eval(t.clone(), env.clone())
+				},
+				ref v => {
+					panic!("{} found in function position", *v)
+				}
 			}
 		},
 		Value::Ident(ref i) => {
@@ -30,6 +40,14 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		}
 		_ => form.clone()
 	}
+}
+
+fn eval_quote(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	params.clone()
+}
+
+fn eval_args(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+	lcell(params.borrow().iter().map(|expr| eval(expr, env.clone())).collect())
 }
 
 fn eval_and(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
@@ -186,24 +204,6 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		nil()
 	} else {
 		fun
-	}
-}
-
-fn eval_fncall(fun_name: LCell<Value>, arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let fnref;
-	{
-		let envref = env.borrow();
-		let fun_cell = envref.get_binding(&*fun_name.borrow());
-		fnref = fun_cell.borrow().clone();
-	}
-	if let Value::Fn(ref fun) = fnref {
-		let mut params = ListBuilder::new();
-		for arg in arguments.borrow().iter() {
-			params.push(eval(arg, env.clone()));
-		}
-		fun.eval(lcell(params.build()), env.clone())
-	} else {
-		panic!("function `{}` not known.", &*fun_name.borrow())
 	}
 }
 

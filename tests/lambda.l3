@@ -1,0 +1,5 @@
+(fn make_adder(x)
+	(fn (y) (+ x y)))
+
+(print
+	((make_adder 1) 1))
