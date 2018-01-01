@@ -53,7 +53,7 @@ fn fn_eval(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 	retval
 }
 
-fn fn_last(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
+fn fn_last(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	match params.borrow().iter().last() {
 		None => nil(),
 		Some(v) => v.clone(),
@@ -113,21 +113,6 @@ fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 
 fn fn_list(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	lcell(params.borrow().iter().collect::<Value>())
-}
-
-fn fn_filter(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
-	let mut it = params.borrow().iter();
-	let pred = it.next().expect("filter called without predicate");
-	let list = it.next().expect("filter called without list");
-	let mut builder = ListBuilder::new();
-	for e in list.borrow().iter() {
-		let expr = cons(pred.clone(), cons(e.clone(), nil()));
-		let evaluated = eval(expr, env.clone());
-		if evaluated.borrow().truthy() {
-			builder.push(e);
-		}
-	}
-	lcell(builder.build())
 }
 
 fn fn_cat(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
