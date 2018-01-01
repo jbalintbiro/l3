@@ -10,6 +10,7 @@ pub fn default_root() -> LCell<Bindings> {
 		("cons", fn_cons),
 		("head", fn_head),
 		("tail", fn_tail),
+		("#", fn_idx),
 
 		("+", fn_add),
 		("*", fn_mul),
@@ -65,6 +66,31 @@ fn fn_tail(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
 	let list = params.borrow().iter().next().expect("tail called without a parameter");
 	let rf = list.borrow();
 	rf.tail().clone()
+}
+
+fn fn_idx(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
+	let mut it = params.borrow().iter();
+	let first = it.next().expect("idx called without parameters");
+	let idx = if let Value::Int(n) = *first.borrow() {
+		n
+	} else {
+		panic!("idx called with non-numeric index")
+	};
+
+	if idx < 1 {
+		panic!("idx called with wrong index")
+	}
+
+	let mut list = it.next().expect("idx missing list");
+	let mut list_it = list.borrow().iter();
+
+	let mut count = idx;
+	let mut retval = nil();
+	while count > 0 {
+		retval = list_it.next().expect("idx called with fewer elements");
+		count -= 1;
+	}
+	retval
 }
 
 fn fn_print(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
