@@ -1,6 +1,10 @@
 #![feature(nll)]
 #![feature(conservative_impl_trait)]
 
+#![cfg_attr(test, feature(test))]
+#[cfg(test)]
+extern crate test;
+
 #[macro_use]
 extern crate clap;
 
@@ -35,6 +39,20 @@ import_submodules!(value, func, parse, internals, eval, bindings, builtins, read
 
 const PRELUDE: &'static str = include_str!("prelude.l3");
 
+pub fn loaded_env() -> LCell<Bindings> {
+	let root_bindings = default_root();
+	for term in read_program(PRELUDE).iter() {
+		eval(term, root_bindings.clone());
+	}
+	root_bindings
+}
+
+pub fn run_program(program: LCell<Value>, env: LCell<Bindings>) {
+	for term in program.borrow().iter() {
+		eval(term, env.clone());
+	}
+}
+
 fn main() {
 	let opts = App::new(crate_name!())
 					.version(crate_version!())
@@ -46,13 +64,7 @@ fn main() {
 					.get_matches();
 
 	let infile = opts.value_of("INPUT").unwrap();
-	let root_bindings = default_root();
-	for term in read_program(PRELUDE).iter() {
-		eval(term, root_bindings.clone());
-	}
-	for term in read_program_file(infile).iter() {
-		eval(term, root_bindings.clone());
-	}
+	run_program(lcell(read_program_file(infile)), loaded_env());
 }
 
 #[cfg(test)]

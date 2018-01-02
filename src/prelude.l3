@@ -15,3 +15,10 @@
 	(if (= ls ())
 		acc
 		(fold op (op acc (head ls)) (tail ls))))
+
+(fn seq (max)
+	(fn go (max acc)
+		(if (= max 0) 
+			acc
+			(go (- max 1) (cons max acc))))
+	(go max ()))
