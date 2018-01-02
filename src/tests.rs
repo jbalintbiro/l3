@@ -121,7 +121,8 @@ fn read_bench(b: &mut Bencher) {
 }
 
 #[test]
-fn eval_stack_overflow() {
+#[ignore]
+fn stack_overflow() {
 	let program = "(filter (fn (n) (mod n 7)) (for n (seq 10000) n))";
 	let parsed = lcell(read_program(program));
 	let env = loaded_env();
