@@ -3,6 +3,8 @@ name = "l3"
 version = "0.1.0-dev"
 authors = ["J Balint Biro <j.balint.biro@gmail.com>"]
 description = "Interpreter for the L3 language"
+license = "ISC License"
+license-file = "LICENSE"
 
 [dependencies]
 clap = "2"
