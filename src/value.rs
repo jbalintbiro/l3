@@ -10,8 +10,7 @@ pub enum Value {
 	True,
 	Int(i32),
 	Ident(String),
-	Fn(Func),
-	Macro(Func),
+	Fn(Func, bool),
 	EOF,
 }
 
@@ -90,8 +89,7 @@ impl fmt::Display for Value {
 				print_list_inner(&*inner, f)?;
 				write!(f, ")")
 			},
-			Value::Fn(ref fun) => write!(f, "(fn {})", fun),
-			Value::Macro(ref fun) => write!(f, "(macro {})", fun),
+			Value::Fn(ref fun, ev) => write!(f, "(fn {})", fun),
 			Value::EOF => write!(f, "EOF"),
 		}
     }

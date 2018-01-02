@@ -47,7 +47,7 @@ impl Bindings {
 
 pub fn make_root_bindings(
 	funs: Vec<(&str, HostFunc)>,
-	macros: Vec<(&str, HostFunc)>,
+	special: Vec<(&str, HostFunc)>,
 	vals: Vec<(&str, LCell<Value>)>) -> Bindings
 {
 	let mut bindings = BTreeMap::new();
@@ -55,10 +55,10 @@ pub fn make_root_bindings(
 		bindings.insert(name.to_string(), val);
 	}
 	for (name, hf) in funs {
-		bindings.insert(name.to_string(), lcell(Value::Fn(Func::HFunc(hf))));
+		bindings.insert(name.to_string(), lcell(Value::Fn(Func::HFunc(hf), true)));
 	}
-	for (name, hf) in macros {
-		bindings.insert(name.to_string(), lcell(Value::Macro(Func::HFunc(hf))));
+	for (name, hf) in special {
+		bindings.insert(name.to_string(), lcell(Value::Fn(Func::HFunc(hf), false)));
 	}
 	Bindings {
 		bindings: bindings,

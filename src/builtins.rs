@@ -33,7 +33,7 @@ pub fn default_root() -> LCell<Bindings> {
 
 		("exit", fn_exit),
 	],
-	root_macros(),
+	special_forms(),
 	vec![
 		("EOF", eof()),
 		("true", boolean(true)),

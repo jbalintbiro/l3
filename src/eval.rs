@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn root_macros() -> Vec<(&'static str, HostFunc)> {
+pub fn special_forms() -> Vec<(&'static str, HostFunc)> {
 	vec![
 		("quote", eval_quote),
 		("fn", eval_fn),
@@ -22,11 +22,9 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 			let evaluated = eval(h.clone(), env.clone());
 			let evref = evaluated.borrow();
 			match *evref {
-				Value::Fn(ref fun) => {
-					fun.eval(eval_args(t.clone(), env.clone()), env.clone())
-				},
-				Value::Macro(ref mac) => {
-					mac.eval(t.clone(), env.clone())
+				Value::Fn(ref fun, ev) => {
+					let args = if ev { eval_args(t.clone(), env.clone()) } else { t.clone() };
+					fun.eval(args, env.clone())
 				},
 				ref v => {
 					panic!("{} found in function position", *v)
@@ -199,7 +197,7 @@ fn eval_fn(arguments: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 		args: argvec,
 		listing: listing,
 		env: lcell(make_empty_bindings(env.clone())),
-	})));
+	}), true));
 
 	if let Some(binding) = bind {
 		(*env.borrow_mut()).set_binding(&binding, fun);
