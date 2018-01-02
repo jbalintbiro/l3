@@ -3,7 +3,6 @@ name = "l3"
 version = "0.1.0-dev"
 authors = ["J Balint Biro <j.balint.biro@gmail.com>"]
 description = "Interpreter for the L3 language"
-license = "ISC License"
 license-file = "LICENSE"
 
 [dependencies]
@@ -13,4 +12,14 @@ pest_derive = "^1.0.0-beta"
 gc = "*"
 gc_derive = "*"
 lazy_static = "1.0.0"
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
 
