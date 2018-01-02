@@ -1,6 +1,6 @@
 (fn filter (pred ls)
 	(if (= ls ()) 
-		(quote)
+		()
 		(last
 			(set h (head ls))
 			(set next (filter pred (tail ls)))
