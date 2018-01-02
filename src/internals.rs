@@ -18,19 +18,26 @@ pub fn ident<T>(i: T) -> LCell<Value>
 	lcell(Value::Ident(i.to_string()))
 }
 
+thread_local! {
+	static NIL: LCell<Value> = lcell(Value::Nil);
+	static FALSE: LCell<Value> = lcell(Value::False);
+	static TRUE: LCell<Value> = lcell(Value::True);
+	static EOF: LCell<Value> = lcell(Value::EOF);
+}
+
 pub fn nil() -> LCell<Value> {
-	lcell(Value::Nil)
+	NIL.with(|nil| nil.clone())
 }
 
 pub fn boolean(b: bool) -> LCell<Value> {
-	lcell(if b {
-		Value::True
+	if b {
+		TRUE.with(|t| t.clone())
 	} else {
-		Value::False
-	})
+		FALSE.with(|f| f.clone())
+	}
 }
 
 pub fn eof() -> LCell<Value> {
-	lcell(Value::EOF)
+	EOF.with(|eof| eof.clone())
 }
 
