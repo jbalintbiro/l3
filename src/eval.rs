@@ -43,7 +43,9 @@ pub fn eval(form: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
 }
 
 fn eval_quote(params: LCell<Value>, _env: LCell<Bindings>) -> LCell<Value> {
-	params.clone()
+	let mut it = params.borrow().iter();
+	let first = it.next().expect("quote called without an argument");
+	first.clone()
 }
 
 fn eval_args(params: LCell<Value>, env: LCell<Bindings>) -> LCell<Value> {
